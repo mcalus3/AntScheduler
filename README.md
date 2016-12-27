@@ -1,8 +1,6 @@
 ![AntScheduler Logo](https://github.com/mcalus3/AntScheduler/blob/master/AntScheduler_logo.png)
 
-By mcalus3.
-
-Ant-powered scheduling app.
+Ant-powered scheduling app by mcalus3.
 
 **AntScheduler** was created for academic purposes, my first goal was to implement a simple, but potentially usable industrial application that can help with industrial process scheduling. The basic task of **AntScheduler** is to solve the combinatorial problem of scheduling n operations on m machines in an optimum manner. That's where comes Ant Colony Optimization algorithm firstly proposed by M. Dorigo in 1992 (and one of the best till now!). The application is under developement.
 
