@@ -11,18 +11,16 @@ import subprocess
 import csv
 import sys
 import logging
+import GVApi
 from Config import Config as ConfigClass
 from GraphNode import GraphNode
 from MaxMin import MaxMin
 from PheromoneEdge import PheromoneEdge
 from AntSystem import AntSystem
 
+
 logger = logging.getLogger("AntScheduler")
 config_file = "config.ini"
-X11_colors = ["Blue", "BlueViolet", "Brown", "Chartreuse", "Coral", "CornflowerBlue", "Crimson", "DarkBlue", "DarkCyan",
-              "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", " DarkOliveGreen", "DarkOrange",
-              "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise",
-              "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DodgerBlue", "FireBrick", "ForestGreen", "Fuchsia"]
 
 
 def initialize_logger():
@@ -49,7 +47,8 @@ class Manager:
 
     def __init__(self, _config_file):
         self.config = ConfigClass(_config_file)
-        self.nodes_list = self.graph_create(self.config.graph_file)
+        graph = self.graph_create(self.config.graph_file)
+        self.nodes_list = graph
 
     @staticmethod
     def schedule_image_create(_result):
@@ -91,7 +90,7 @@ class Manager:
 
             for row in csv_reader:
                 if len(row) < 3:
-                    logger.error("Incorrect input, blank line in input file")
+                    logger.warning("Incorrect input, blank line in input file")
                     continue
                 nodes_list.append(GraphNode(row[0], int(row[1]), int(row[2])))
             file_csv.seek(0)
@@ -138,6 +137,7 @@ class Manager:
 
 def main():
     manager = Manager(config_file)
+    GVApi.draw_graph(manager.nodes_list)
     manager.algorithm_run()
 
 
