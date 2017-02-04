@@ -7,7 +7,6 @@ Copyright (C) 2016 Marek Calus. All Rights Reserved.
 """
 
 import os
-import subprocess
 import csv
 import sys
 import logging
@@ -84,8 +83,9 @@ class Manager:
             text_file.write(schedule_str)
 
     def graph_create(self, _graph_file):
+        graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _graph_file)
         nodes_list = []
-        with open(_graph_file, "r") as file_csv:
+        with open(graph_path, "r") as file_csv:
             csv_reader = csv.reader(file_csv)
 
             for row in csv_reader:

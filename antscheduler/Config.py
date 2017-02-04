@@ -1,16 +1,17 @@
 import configparser
 from configparser import ConfigParser
 import logging
+import os
 
 logger = logging.getLogger("AntScheduler.MaxMin")
-
 
 class Config:
     """ Class containing all configuration infos as fields"""
 
-    def __init__(self, _config_path):
+    def __init__(self, _config_name):
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _config_name)
         parser = ConfigParser()
-        parser.read(_config_path)
+        parser.read(config_path)
 
         try:
             self.graph_file = parser.get("strings", "graph_file")
