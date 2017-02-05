@@ -20,6 +20,7 @@ from AntSystem import AntSystem
 
 logger = logging.getLogger("AntScheduler")
 config_file = "config.ini"
+render_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 
 
 def initialize_logger():
@@ -79,7 +80,7 @@ class Manager:
             schedule_str += str(n) + "0        "
         schedule_str += str(_result.value)
 
-        with open("output_schedule.txt", "w") as text_file:
+        with open(os.path.join(render_path, "output_schedule.txt"), "w") as text_file:
             text_file.write(schedule_str)
 
     def graph_create(self, _graph_file):
@@ -137,7 +138,8 @@ class Manager:
 
 def main():
     manager = Manager(config_file)
-    GVApi.draw_graph(manager.nodes_list)
+    if manager.config.render_images:
+        GVApi.draw_graph(manager.nodes_list)
     manager.algorithm_run()
 
 

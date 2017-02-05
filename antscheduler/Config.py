@@ -25,5 +25,7 @@ class Config:
             self.pheromone_potency = parser.getfloat("floats", "pheromone_potency")
             self.pheromone_distribution = parser.getfloat("floats", "pheromone_distribution")
             self.init_pheromone_value = parser.getfloat("floats", "init_pheromone_value")
+
+            self.render_images = parser.getboolean("booleans", "render_images")
         except configparser.NoOptionError or configparser.NoSectionError:
             raise IOError(".ini config file corrupted!")
