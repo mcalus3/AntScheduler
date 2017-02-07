@@ -17,14 +17,12 @@ from MaxMin import MaxMin
 from PheromoneEdge import PheromoneEdge
 from AntSystem import AntSystem
 
-
 logger = logging.getLogger("AntScheduler")
 config_file = "config.ini"
 render_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 
 
 def initialize_logger():
-
     logger.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.stdout)
@@ -89,6 +87,7 @@ class Manager:
         with open(graph_path, "r") as file_csv:
             csv_reader = csv.reader(file_csv)
 
+            # read the static info about each node
             for row in csv_reader:
                 if len(row) < 3:
                     logger.warning("Incorrect input, blank line in input file")
@@ -96,17 +95,17 @@ class Manager:
                 nodes_list.append(GraphNode(row[0], int(row[1]), int(row[2])))
             file_csv.seek(0)
 
+            # read the dynamic info about each node (successors lists)
             for i, row in enumerate(csv_reader):
                 if len(row) <= 3:
                     continue
                 pre_list = row[3].split()
                 predecessors = [node for node in nodes_list if node.name in pre_list]
-
                 for predecessor in predecessors:
                     nodes_list[i].add_predecessor(predecessor)
                     predecessor.add_successor(nodes_list[i])
 
-                    # pheromone edges are initialised
+            # initialise pheromone edges
             for predecessor in nodes_list:
                 nested_predecessors = [predecessor] + predecessor.return_nested_predecessors()
                 for successor in nodes_list:
@@ -116,16 +115,13 @@ class Manager:
         return nodes_list
 
     def algorithm_run(self):
-        """TODO: replace with classes inheriting after algorithm class and overriding functions"""
 
         if self.config.algorithm_type == "max_min":
             algorithm = MaxMin(self.config, self.nodes_list)
         elif self.config.algorithm_type == "ant_system":
             algorithm = AntSystem(self.config, self.nodes_list)
         else:
-
             return
-
         algorithm.run()
 
         logger.info("result history:")
