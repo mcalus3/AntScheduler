@@ -9,7 +9,7 @@ class Config:
     """ Class containing all configuration infos as fields"""
 
     def __init__(self, _config_name):
-        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _config_name)
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', _config_name)
         parser = ConfigParser()
         parser.read(config_path)
 

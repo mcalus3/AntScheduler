@@ -18,7 +18,6 @@ from PheromoneEdge import PheromoneEdge
 from AntSystem import AntSystem
 
 logger = logging.getLogger("AntScheduler")
-config_file = "config.ini"
 render_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 
 
@@ -130,14 +129,3 @@ class Manager:
         logger.info("best path: {0}".format(best_result.result.value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
         self.schedule_image_create(best_result.result)
-
-
-def main():
-    manager = Manager(config_file)
-    if manager.config.render_images:
-        GVApi.draw_graph(manager.nodes_list)
-    manager.algorithm_run()
-
-
-if __name__ == "__main__":
-    main()
