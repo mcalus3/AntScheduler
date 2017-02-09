@@ -24,22 +24,10 @@ class Ant:
         self.visibility_list.remove(_next_node)
         self.visibility_list_update()
 
-    @staticmethod
-    def weighted_choice(_pheromones_dict):
-        choices = [(node, value) for node, value in _pheromones_dict.items()]
-        total = sum(w for c, w in choices)
-        r = random.uniform(0, total)
-        upto = 0
-        for c, w in choices:
-            if upto + w >= r:
-                return c
-            upto += w
-        logger.error("Shouldn't get here")
-        return None
 
     def next_node_calculate(self):
         pheromones_dict = self.visited_list[-1].get_pheromones(self.visibility_list)
-        next_node = self.weighted_choice(pheromones_dict)
+        next_node = weighted_choice(pheromones_dict)
         return next_node
 
     def result_generate(self):
@@ -47,3 +35,16 @@ class Ant:
             next_node = self.next_node_calculate()
             self.ant_move(next_node)
         self.result = Result(self.visited_list)
+
+
+def weighted_choice(_pheromones_dict):
+    choices = [(node, value) for node, value in _pheromones_dict.items()]
+    total = sum(w for c, w in choices)
+    r = random.uniform(0, total)
+    upto = 0
+    for c, w in choices:
+        if upto + w >= r:
+            return c
+        upto += w
+    logger.error("Shouldn't get here")
+    return None
