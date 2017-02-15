@@ -16,8 +16,8 @@ class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
     def closeEvent(self, event):
 
         reply = QtWidgets.QMessageBox.question(self, 'Message',
-            "Are you sure to quit?", QtWidgets.QMessageBox.Yes |
-            QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+                                               "Are you sure to quit?", QtWidgets.QMessageBox.Yes |
+                                               QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 
         if reply == QtWidgets.QMessageBox.Yes:
             event.accept()
@@ -30,6 +30,7 @@ class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
             GVApi.draw_graph(manager.nodes_list)
 
         manager.algorithm_run()
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

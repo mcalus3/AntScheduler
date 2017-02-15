@@ -1,5 +1,3 @@
-__author__ = 'mcalus'
-
 import graphviz
 import os
 

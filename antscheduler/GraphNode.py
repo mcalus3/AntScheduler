@@ -8,7 +8,7 @@ class GraphNode:
         self.successor_list = []
         self.predecessor_list = []
         self.pheromone_dict = {}
-        self.time_left = None
+        self.start_time = None
 
     def add_successor(self, _successor):
         self.successor_list.append(_successor)

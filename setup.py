@@ -21,7 +21,7 @@ setup(
     license='GPL-3.0',
     packages=['antscheduler'],
     package_dir={'antscheduler': 'antscheduler'},
-    install_requires=['graphviz'],
+    install_requires=['graphviz', 'PyQt5'],
     entry_points={
         'console_scripts': ['AntScheduler = antscheduler.__main__:main'],
     },

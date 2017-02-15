@@ -45,39 +45,6 @@ class Manager:
         graph = self.graph_create(self.config.graph_file)
         self.nodes_list = graph
 
-    @staticmethod
-    def schedule_image_create(_result):
-        """TODO: to be replaced by the scheduler class with matplotlib graph creation"""
-        schedule_str = ""
-        machines = 0
-        # Getting the machines number
-        for op in _result.operation_list:
-            if op.type > machines:
-                machines = op.type
-
-        for machine in range(1, machines + 1):
-            schedule_str += "Machine " + str(machine)
-            machine_operations = [operation for operation in _result.operation_list if operation.type == machine]
-            t = 0
-            # printing the schedule for current machine
-            while machine_operations:
-                if machine_operations[0].start_time == t:
-                    schedule_str += machine_operations[0].name[0] * machine_operations[0].time
-                    t += machine_operations[0].time
-                    machine_operations.pop(0)
-                else:
-                    schedule_str += " "
-                    t += 1
-            schedule_str += "\n"
-        # printing the time axis
-        schedule_str += "         "
-        for n in range(int(_result.value / 10 + 1)):
-            schedule_str += str(n) + "0        "
-        schedule_str += str(_result.value)
-
-        with open(os.path.join(render_path, "output_schedule.txt"), "w") as text_file:
-            text_file.write(schedule_str)
-
     def graph_create(self, _graph_file):
         graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _graph_file)
         nodes_list = []
@@ -126,4 +93,39 @@ class Manager:
         best_result = sorted(algorithm.result_history, key=lambda x: x.result_value)[0]
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
-        #TODO: self.schedule_image_create(best_result.visited_list)
+        schedule_image_create(best_result)
+
+
+def schedule_image_create(_ant):
+    """TODO: to be replaced by the scheduler class with matplotlib graph creation"""
+    _operations_list = _ant.visited_list
+    _result = _ant.result_value
+    schedule_str = ""
+    machines = 0
+    # Getting the machines number
+    for op in _operations_list:
+        if op.type > machines:
+            machines = op.type
+
+    for machine in range(1, machines + 1):
+        schedule_str += "Machine " + str(machine)
+        machine_operations = [operation for operation in _operations_list if operation.type == machine]
+        t = 0
+        # printing the schedule for current machine
+        while machine_operations:
+            if machine_operations[0].start_time == t:
+                schedule_str += machine_operations[0].name[0] * machine_operations[0].time_value
+                t += machine_operations[0].time_value
+                machine_operations.pop(0)
+            else:
+                schedule_str += " "
+                t += 1
+        schedule_str += "\n"
+    # printing the time axis
+    schedule_str += "         "
+    for n in range(int(_result / 10 + 1)):
+        schedule_str += str(n) + "0        "
+    schedule_str += str(_result)
+
+    with open(os.path.join(render_path, "output_schedule.txt"), "w") as text_file:
+        text_file.write(schedule_str)

@@ -1,5 +1,6 @@
 import random
 import logging
+
 logger = logging.getLogger("AntScheduler.Ant")
 
 
@@ -42,37 +43,21 @@ def weighted_choice_sub(_dict):
         if rnd < 0:
             return w
 
-def result_value_calculate_as_makespan(_result_permutation):
-    waiting_list = _result_permutation[:]
-    running_list = []
-    for node in waiting_list:
-        node.time_left = node.time_value
-    t = -1
-    while True:
-        # each loop is next time moment
-        t += 1
-        if waiting_list:
-            while waiting_list[0].type not in [operation.type for operation in running_list]:
-                # try to run first operation in queue - if it is possible run it and check next
-                if operation_check_availability(waiting_list, running_list):
-                    #TODO: Add missing data structures
-                    running_list.append(waiting_list.pop(0))
-                    if not waiting_list:
-                        break
-                else:
-                    # if not, wait for next moment in time
-                    break
-        # delete completed operations from running list and decrease time left
-        running_list = [operation for operation in running_list if operation.time_left > 1]
-        for operation in running_list:
-            operation.time_left -= 1
-        if not (waiting_list or running_list):
-            # terminate the simulation
-            return t
+
+def result_value_calculate_as_makespan(_operations):
+    for i, operation in enumerate(_operations):
+        machine_unload_time = get_machine_unload_time(_operations, i)
+        if operation.predecessor_list:
+            predecessor_end_times = [predecessor.start_time + predecessor.time_value for predecessor in
+                                    operation.predecessor_list]
+        else:
+            predecessor_end_times = [0]
+        operation.start_time = max([machine_unload_time] + predecessor_end_times)
+    return _operations[-1].start_time + _operations[-1].time_value
 
 
-def operation_check_availability(waiting_list, running_list):
-    for req in waiting_list[0].predecessor_list:
-        if req.name in [op.name for op in running_list + waiting_list]:
-            return False
-    return True
+def get_machine_unload_time(_operations, current):
+    for i in reversed(range(current)):
+        if _operations[i].type == _operations[current].type:
+            return _operations[i].start_time + _operations[i].time_value
+    return 0

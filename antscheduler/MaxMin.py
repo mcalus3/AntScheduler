@@ -25,8 +25,6 @@ class MaxMin(AntAlgorithm):
             node = next_node
 
     def graph_pheromone_and_history_update(self):
-        for ant in self.ant_population:
-            ant.result_value = Ant.result_value_calculate_as_makespan(ant.visited_list)
         self.ant_population.sort(key=lambda x: x.result_value)
         self.result_history.append(self.ant_population[0])
 
@@ -41,13 +39,14 @@ class MaxMin(AntAlgorithm):
     def run(self):
 
         for iteration in range(self.config.iterations):
-            self.ant_population = [Ant.Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
+            ant_population = [Ant.Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
 
-            for ant in self.ant_population:
+            for ant in ant_population:
                 ant.result_generate()
                 self.pheromone_trail_modify(ant.visited_list, self.config.evaporation_rate, MathOp.MULTIPLY)
                 self.pheromone_trail_modify(ant.visited_list, 1 - self.config.evaporation_rate, MathOp.ADD)
 
             self.graph_pheromone_and_history_update()
             logger.info(
-                "running iteration: {0}, best result_permutation is: {1}".format(iteration, self.result_history[-1].result_value))
+                "running iteration: {0}, best result_permutation is: {1}".format(iteration,
+                                                                                 self.result_history[-1].result_value))
