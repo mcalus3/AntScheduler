@@ -28,7 +28,7 @@ class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
         manager = Manager(config_file)
         if manager.config.render_images:
             GVApi.draw_graph(manager.nodes_list)
-            
+
         manager.algorithm_run()
 
 def main():

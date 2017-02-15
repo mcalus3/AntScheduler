@@ -16,15 +16,16 @@ class AntSystem(AntAlgorithm):
     @staticmethod
     def pheromone_trail_modify(_trail, _value, _operation):
 
-        for i, node in enumerate(_trail):
+        for i, node in _trail:
             if i == len(_trail) - 1:
                 break
-            for edge in node.pheromone_list:
-                if edge.successor == _trail[i + 1]:
+            for edge in node.pheromone_dict:
+                next_edge = next(_trail)
+                if edge == next_edge:
                     if _operation == MathOp.MULTIPLY:
-                        edge.multiply_pheromone(_value)
+                        node[next_edge] *= _value
                     elif _operation == MathOp.ADD:
-                        edge.add_pheromone(_value)
+                        node[next_edge] += _value
 
     def graph_pheromone_and_history_update(self):
         [ant.result.value_generate_as_makespan() for ant in self.ant_population]
@@ -51,4 +52,4 @@ class AntSystem(AntAlgorithm):
 
             self.graph_pheromone_and_history_update()
             logger.info(
-                "running iteration: {0}, best result is: {1}".format(iteration, self.result_history[-1].result.value))
+                "running iteration: {0}, best result_permutation is: {1}".format(iteration, self.result_history[-1].result.value))

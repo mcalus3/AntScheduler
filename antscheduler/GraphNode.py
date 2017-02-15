@@ -6,8 +6,9 @@ class GraphNode:
         self.type = _type
         self.time_value = _time_value
         self.successor_list = []
-        self.pheromone_list = []
         self.predecessor_list = []
+        self.pheromone_dict = {}
+        self.time_left = None
 
     def add_successor(self, _successor):
         self.successor_list.append(_successor)
@@ -15,17 +16,11 @@ class GraphNode:
     def add_predecessor(self, _predecessor):
         self.predecessor_list.append(_predecessor)
 
-    def add_pheromone(self, _pheromone_edge):
-        self.pheromone_list.append(_pheromone_edge)
+    def add_pheromone(self, _successor):
+        self.pheromone_dict[_successor] = 1
 
     def get_pheromones(self, _nodes):
-        pheromone_dict = {}
-        for node in _nodes:
-            pheromone_dict[node] = 1
-            for pheromone in self.pheromone_list:
-                if pheromone.successor in pheromone_dict:
-                    pheromone_dict[pheromone.successor] = pheromone.value
-        return pheromone_dict
+        return {node: self.pheromone_dict[node] for node in _nodes if node in self.pheromone_dict}
 
     def return_nested_predecessors(self):
         nested_list = self.predecessor_list[:]

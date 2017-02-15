@@ -10,11 +10,9 @@ import os
 import csv
 import sys
 import logging
-import GVApi
 from Config import Config as ConfigClass
 from GraphNode import GraphNode
 from MaxMin import MaxMin
-from PheromoneEdge import PheromoneEdge
 from AntSystem import AntSystem
 
 logger = logging.getLogger("AntScheduler")
@@ -109,7 +107,7 @@ class Manager:
                 nested_predecessors = [predecessor] + predecessor.return_nested_predecessors()
                 for successor in nodes_list:
                     if successor not in nested_predecessors:
-                        predecessor.add_pheromone(PheromoneEdge(successor, self.config.init_pheromone_value))
+                        predecessor.pheromone_dict[successor] = self.config.init_pheromone_value
 
         return nodes_list
 
@@ -123,9 +121,9 @@ class Manager:
             return
         algorithm.run()
 
-        logger.info("result history:")
-        logger.info([ant.result.value for ant in algorithm.result_history])
-        best_result = sorted(algorithm.result_history, key=lambda x: x.result.value)[0]
-        logger.info("best path: {0}".format(best_result.result.value))
+        logger.info("result_permutation history:")
+        logger.info([ant.result_value for ant in algorithm.result_history])
+        best_result = sorted(algorithm.result_history, key=lambda x: x.result_value)[0]
+        logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
-        self.schedule_image_create(best_result.result)
+        #TODO: self.schedule_image_create(best_result.visited_list)

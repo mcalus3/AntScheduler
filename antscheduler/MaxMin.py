@@ -1,5 +1,5 @@
 import logging
-from Ant import Ant
+import Ant
 from AntAlgorithm import AntAlgorithm
 from AntAlgorithm import MathOp
 
@@ -15,23 +15,22 @@ class MaxMin(AntAlgorithm):
 
     @staticmethod
     def pheromone_trail_modify(_trail, _value, _operation):
-
-        for i, node in enumerate(_trail):
-            if i == len(_trail) - 1:
-                break
-            for edge in node.pheromone_list:
-                if edge.successor == _trail[i + 1]:
-                    if _operation == MathOp.MULTIPLY:
-                        edge.multiply_pheromone(_value)
-                    elif _operation == MathOp.ADD:
-                        edge.add_pheromone(_value)
+        iterator = iter(_trail)
+        node = next(iterator)  # throws StopIteration if empty.
+        for next_node in iterator:
+            if _operation == MathOp.MULTIPLY:
+                node.pheromone_dict[next_node] *= _value
+            elif _operation == MathOp.ADD:
+                node.pheromone_dict[next_node] += _value
+            node = next_node
 
     def graph_pheromone_and_history_update(self):
-        [ant.result.value_generate_as_makespan() for ant in self.ant_population]
-        self.ant_population.sort(key=lambda x: x.result.value)
+        for ant in self.ant_population:
+            ant.result_value = Ant.result_value_calculate_as_makespan(ant.visited_list)
+        self.ant_population.sort(key=lambda x: x.result_value)
         self.result_history.append(self.ant_population[0])
 
-        best_result = sorted(self.result_history, key=lambda x: x.result.value)[0]
+        best_result = sorted(self.result_history, key=lambda x: x.result_value)[0]
         self.pheromone_trail_modify(best_result.visited_list, 1 + self.config.pheromone_potency, MathOp.MULTIPLY)
         for i, ant in enumerate(self.ant_population):
             if i == self.config.max_min_ants_promoted:
@@ -42,7 +41,7 @@ class MaxMin(AntAlgorithm):
     def run(self):
 
         for iteration in range(self.config.iterations):
-            self.ant_population = [Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
+            self.ant_population = [Ant.Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
 
             for ant in self.ant_population:
                 ant.result_generate()
@@ -51,4 +50,4 @@ class MaxMin(AntAlgorithm):
 
             self.graph_pheromone_and_history_update()
             logger.info(
-                "running iteration: {0}, best result is: {1}".format(iteration, self.result_history[-1].result.value))
+                "running iteration: {0}, best result_permutation is: {1}".format(iteration, self.result_history[-1].result_value))
