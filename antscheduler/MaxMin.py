@@ -12,6 +12,7 @@ class MaxMin(AntAlgorithm):
 
     def __init__(self, _config, _nodes_list):
         AntAlgorithm.__init__(self, _config, _nodes_list)
+        self.ant_population = None
 
     @staticmethod
     def pheromone_trail_modify(_trail, _value, _operation):
@@ -39,9 +40,9 @@ class MaxMin(AntAlgorithm):
     def run(self):
 
         for iteration in range(self.config.iterations):
-            ant_population = [Ant.Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
+            self.ant_population = [Ant.Ant(self.nodes_list[0]) for _ in range(int(self.config.ant_population))]
 
-            for ant in ant_population:
+            for ant in self.ant_population:
                 ant.result_generate()
                 self.pheromone_trail_modify(ant.visited_list, self.config.evaporation_rate, MathOp.MULTIPLY)
                 self.pheromone_trail_modify(ant.visited_list, 1 - self.config.evaporation_rate, MathOp.ADD)

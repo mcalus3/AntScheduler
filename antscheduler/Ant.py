@@ -49,7 +49,7 @@ def result_value_calculate_as_makespan(_operations):
         machine_unload_time = get_machine_unload_time(_operations, i)
         if operation.predecessor_list:
             predecessor_end_times = [predecessor.start_time + predecessor.time_value for predecessor in
-                                    operation.predecessor_list]
+                                     operation.predecessor_list]
         else:
             predecessor_end_times = [0]
         operation.start_time = max([machine_unload_time] + predecessor_end_times)
