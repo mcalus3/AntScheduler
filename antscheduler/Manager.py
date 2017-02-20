@@ -93,10 +93,10 @@ class Manager:
 
         logger.info("result_permutation history:")
         logger.info([ant.result_value for ant in algorithm.result_history])
-        best_result = sorted(algorithm.result_history, key=lambda x: x.result_value)[0]
+        best_result = algorithm.result_history[0]
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
-        schedule_image_create(best_result)
+        #ImagesApi.schedule_image_create(best_result)
 
 
 class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
