@@ -45,6 +45,8 @@ def weighted_choice_sub(_dict):
 
 
 def result_value_calculate_as_makespan(_operations):
+    """Function that makes the schedule given the processes order. Returns the makespan."""
+
     for i, operation in enumerate(_operations):
         machine_unload_time = get_machine_unload_time(_operations, i)
         if operation.predecessor_list:

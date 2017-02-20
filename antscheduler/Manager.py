@@ -10,13 +10,16 @@ import os
 import csv
 import sys
 import logging
-from Config import Config as ConfigClass
+import UiForm
+import ImagesApi
+from Config import Config
 from GraphNode import GraphNode
 from AntAlgorithm import MaxMin
 from AntAlgorithm import AntSystem
+from PyQt5 import QtWidgets
+
 
 logger = logging.getLogger("AntScheduler")
-render_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
 
 
 def initialize_logger():
@@ -35,13 +38,13 @@ def initialize_logger():
 
 
 class Manager:
-    """handles input, output, configuration and graph creation, runs the algorithm and plots the schedule"""
+    """stores algorithm configuration data, does graph creation from data file and runs the algorithm"""
 
     global logger
     initialize_logger()
 
     def __init__(self, _config_file):
-        self.config = ConfigClass(_config_file)
+        self.config = Config(_config_file)
         graph = self.graph_create(self.config.graph_file)
         self.nodes_list = graph
 
@@ -94,6 +97,39 @@ class Manager:
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
         schedule_image_create(best_result)
+
+
+class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
+    """Handles the UI form input and output"""
+
+    def __init__(self, manager, parent=None):
+        super(self.__class__, self).__init__(parent)
+        self.setupUi(self)
+        self.RunButton.clicked.connect(self.algorithm_run)
+        self.manager = manager
+    def closeEvent(self, event):
+
+        reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                               "Are you sure to quit?", QtWidgets.QMessageBox.Yes |
+                                               QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
+    def algorithm_run(self):
+        if self.manager.config.render_images:
+            ImagesApi.draw_graph(self.manager.nodes_list)
+
+        self.manager.algorithm_run()
+
+
+class CLIManager:
+    """Handles the CLI input and output"""
+
+    def __init__(self):
+        pass
 
 
 def schedule_image_create(_ant):
