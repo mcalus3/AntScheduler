@@ -12,8 +12,8 @@ import sys
 import logging
 from Config import Config as ConfigClass
 from GraphNode import GraphNode
-from MaxMin import MaxMin
-from AntSystem import AntSystem
+from AntAlgorithm import MaxMin
+from AntAlgorithm import AntSystem
 
 logger = logging.getLogger("AntScheduler")
 render_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
