@@ -69,12 +69,12 @@ class Manager:
                 pre_list = row[3].split()
                 predecessors = [node for node in nodes_list if node.name in pre_list]
                 for predecessor in predecessors:
-                    nodes_list[i].add_predecessor(predecessor)
-                    predecessor.add_successor(nodes_list[i])
+                    nodes_list[i].predecessor_list.append(predecessor)
+                    predecessor.successor_list.append(nodes_list[i])
 
             # initialise pheromone edges
             for predecessor in nodes_list:
-                nested_predecessors = [predecessor] + predecessor.return_nested_predecessors()
+                nested_predecessors = [predecessor] + predecessor.nested_predecessors()
                 for successor in nodes_list:
                     if successor not in nested_predecessors:
                         predecessor.pheromone_dict[successor] = self.config.init_pheromone_value
@@ -132,36 +132,4 @@ class CLIManager:
         pass
 
 
-def schedule_image_create(_ant):
-    """TODO: to be replaced by the scheduler class with matplotlib graph creation"""
-    _operations_list = _ant.visited_list
-    _result = _ant.result_value
-    schedule_str = ""
-    machines = 0
-    # Getting the machines number
-    for op in _operations_list:
-        if op.type > machines:
-            machines = op.type
 
-    for machine in range(1, machines + 1):
-        schedule_str += "Machine " + str(machine)
-        machine_operations = [operation for operation in _operations_list if operation.type == machine]
-        t = 0
-        # printing the schedule for current machine
-        while machine_operations:
-            if machine_operations[0].start_time == t:
-                schedule_str += machine_operations[0].name[0] * machine_operations[0].time_value
-                t += machine_operations[0].time_value
-                machine_operations.pop(0)
-            else:
-                schedule_str += " "
-                t += 1
-        schedule_str += "\n"
-    # printing the time axis
-    schedule_str += "         "
-    for n in range(int(_result / 10 + 1)):
-        schedule_str += str(n) + "0        "
-    schedule_str += str(_result)
-
-    with open(os.path.join(render_path, "output_schedule.txt"), "w") as text_file:
-        text_file.write(schedule_str)

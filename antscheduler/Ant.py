@@ -11,6 +11,7 @@ class Ant:
         self.visited_list = [_start_node]
         self.visibility_list = []
         self.result_value = None
+        # TODO: unclear, refactor for algorithm consistency
         self.visibility_list_update()
 
     def visibility_list_update(self):
@@ -25,7 +26,7 @@ class Ant:
         self.visibility_list_update()
 
     def next_node_calculate(self):
-        pheromones_dict = self.visited_list[-1].get_pheromones(self.visibility_list)
+        pheromones_dict = self.visited_list[-1].pheromones_get(self.visibility_list)
         next_node = weighted_choice_sub(pheromones_dict)
         return next_node
 
@@ -37,6 +38,7 @@ class Ant:
 
 
 def weighted_choice_sub(_dict):
+    """Optimized weighted choice function. For further optimization, iterate through sorted list (descending)"""
     rnd = random.random() * sum(_dict.values())
     for i, w in enumerate(_dict):
         rnd -= _dict[w]
@@ -45,10 +47,11 @@ def weighted_choice_sub(_dict):
 
 
 def result_value_calculate_as_makespan(_operations):
-    """Function that makes the schedule given the processes order. Returns the makespan."""
+    """Function that makes the schedule given the processes order. Returns the makespan. Roughly optimized"""
 
     for i, operation in enumerate(_operations):
-        machine_unload_time = get_machine_unload_time(_operations, i)
+        # TODO: bad-looking list split (get the i-th and previous ones)
+        machine_unload_time = get_machine_unload_time(_operations[:i+1])
         if operation.predecessor_list:
             predecessor_end_times = [predecessor.start_time + predecessor.time_value for predecessor in
                                      operation.predecessor_list]
@@ -58,8 +61,9 @@ def result_value_calculate_as_makespan(_operations):
     return _operations[-1].start_time + _operations[-1].time_value
 
 
-def get_machine_unload_time(_operations, current):
-    for i in reversed(range(current)):
-        if _operations[i].type == _operations[current].type:
-            return _operations[i].start_time + _operations[i].time_value
+def get_machine_unload_time(_operations):
+    """Function used only by the result_value_calculate_as_makespan"""
+    for operation in reversed(_operations[:-1]):
+        if operation.type == _operations[-1].type:
+            return operation.start_time + operation.time_value
     return 0
