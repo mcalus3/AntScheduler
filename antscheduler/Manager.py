@@ -24,15 +24,11 @@ config_file = "config.ini"
 
 def initialize_logger():
     logger.setLevel(logging.DEBUG)
-
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
-
     console_handler.setFormatter(
         logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
-
     logger.addHandler(console_handler)
-
     logger.debug("Logger initialized")
     return logger
 
@@ -45,10 +41,7 @@ class Manager:
 
     def __init__(self):
         self.config = Config(config_file)
-        graph = self.graph_create(self.config.graph_file)
-        self.nodes_list = graph
-        # TODO: Temoprary
-        ImagesApi.draw_graph(self.nodes_list)
+        self.nodes_list = self.graph_create(self.config.graph_file)
 
     def graph_create(self, _graph_file):
         graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _graph_file)
@@ -56,31 +49,33 @@ class Manager:
         with open(graph_path, "r") as file_csv:
             csv_reader = csv.reader(file_csv)
 
-            # read the static info about each node
             for row in csv_reader:
+                # check if the data aren't missing
                 if len(row) < 3:
                     logger.warning("Incorrect input, blank line in input file")
                     continue
+                # read the static info about each node
                 nodes_list.append(GraphNode(row[0], int(row[1]), int(row[2])))
-            file_csv.seek(0)
 
-            # read the dynamic info about each node (successors lists)
+                # read the dynamic info about each node (successors lists)
+            file_csv.seek(0)
             for i, row in enumerate(csv_reader):
-                if len(row) <= 3:
-                    continue
-                pre_list = row[3].split()
-                predecessors = [node for node in nodes_list if node.name in pre_list]
-                for predecessor in predecessors:
-                    nodes_list[i].predecessor_list.append(predecessor)
-                    predecessor.successor_list.append(nodes_list[i])
+                try:
+                    pre_list = row[3].split()
+                    for predecessor in [node for node in nodes_list if node.name in pre_list]:
+                        nodes_list[i].predecessor_list.append(predecessor)
+                        predecessor.successor_list.append(nodes_list[i])
+                except IndexError:
+                    continue  # node has no successors
 
             # initialise pheromone edges
-            for predecessor in nodes_list:
-                nested_predecessors = [predecessor] + predecessor.nested_predecessors()
+            for node in nodes_list:
+                nested_predecessors = [node] + node.nested_predecessors()
                 for successor in nodes_list:
                     if successor not in nested_predecessors:
-                        predecessor.pheromone_dict[successor] = self.config.init_pheromone_value
-
+                        node.pheromone_dict[successor] = self.config.init_pheromone_value
+        # draw a graph image
+        ImagesApi.draw_graph(nodes_list)
         return nodes_list
 
     def algorithm_run(self):
@@ -94,10 +89,6 @@ class Manager:
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
         ImagesApi.schedule_image_create(best_result)
-
-    def nodes_list_load(self):
-        """Loads new nodes list and draws it"""
-        pass
 
 
 class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
