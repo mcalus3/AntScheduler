@@ -1,6 +1,8 @@
 import graphviz
 import os
+import logging
 
+logger = logging.getLogger("AntScheduler.ImagesApi")
 X11_colors = ["Blue", "BlueViolet", "Brown", "Chartreuse", "Coral", "CornflowerBlue", "Crimson", "DarkBlue", "DarkCyan",
               "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", " DarkOliveGreen", "DarkOrange",
               "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise",
@@ -19,11 +21,13 @@ def draw_graph(nodes_list):
         for successor in node.successor_list:
             graph.edge(node.name, successor.name, label=str(successor.time_value))
 
-    graph.render(directory=render_dir)
-
+    try:
+        graph.render(directory=render_dir)
+    except RuntimeError:
+        logger.warning("Can't render graphs. Check if Graphviz path is valid")
 
 def schedule_image_create(_ant):
-    """TODO: to be replaced by the scheduler class with matplotlib graph creation"""
+    """TODO: to be replaced by the scheduler class with matplotlib graph creation
     _operations_list = _ant.visited_list
     _result = _ant.result_value
     schedule_str = ""
@@ -55,3 +59,5 @@ def schedule_image_create(_ant):
 
     with open(os.path.join(render_dir, "output_schedule.txt"), "w") as text_file:
         text_file.write(schedule_str)
+    """
+    pass

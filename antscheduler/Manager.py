@@ -12,14 +12,14 @@ import sys
 import logging
 import UiForm
 import ImagesApi
+import AntAlgorithm
 from Config import Config
 from GraphNode import GraphNode
-from AntAlgorithm import MaxMin
-from AntAlgorithm import AntSystem
 from PyQt5 import QtWidgets
 
 
 logger = logging.getLogger("AntScheduler")
+config_file = "config.ini"
 
 
 def initialize_logger():
@@ -43,10 +43,12 @@ class Manager:
     global logger
     initialize_logger()
 
-    def __init__(self, _config_file):
-        self.config = Config(_config_file)
+    def __init__(self):
+        self.config = Config(config_file)
         graph = self.graph_create(self.config.graph_file)
         self.nodes_list = graph
+        # TODO: Temoprary
+        ImagesApi.draw_graph(self.nodes_list)
 
     def graph_create(self, _graph_file):
         graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), _graph_file)
@@ -82,54 +84,41 @@ class Manager:
         return nodes_list
 
     def algorithm_run(self):
-
-        if self.config.algorithm_type == "max_min":
-            algorithm = MaxMin(self.config, self.nodes_list)
-        elif self.config.algorithm_type == "ant_system":
-            algorithm = AntSystem(self.config, self.nodes_list)
-        else:
-            return
+        # run function specified in self.config.algorithm_type with arguments self.config and self.nodes_list
+        algorithm = getattr(AntAlgorithm, self.config.algorithm_type)(self.config, self.nodes_list)
         algorithm.run()
 
         logger.info("result_permutation history:")
         logger.info([ant.result_value for ant in algorithm.result_history])
-        best_result = algorithm.result_history[0]
+        best_result = algorithm.history_best
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
-        #ImagesApi.schedule_image_create(best_result)
+        ImagesApi.schedule_image_create(best_result)
+
+    def nodes_list_load(self):
+        """Loads new nodes list and draws it"""
+        pass
 
 
-class UIManager(QtWidgets.QMainWindow, UiForm.Ui_MainWindow):
+class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
     """Handles the UI form input and output"""
-
-    def __init__(self, manager, parent=None):
+    def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)
         self.RunButton.clicked.connect(self.algorithm_run)
-        self.manager = manager
+
     def closeEvent(self, event):
-
         reply = QtWidgets.QMessageBox.question(self, 'Message',
-                                               "Are you sure to quit?", QtWidgets.QMessageBox.Yes |
+                                               "Are you sure you want to quit?", QtWidgets.QMessageBox.Yes |
                                                QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
-
         if reply == QtWidgets.QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
 
-    def algorithm_run(self):
-        if self.manager.config.render_images:
-            ImagesApi.draw_graph(self.manager.nodes_list)
 
-        self.manager.algorithm_run()
-
-
-class CLIManager:
+class CLIManager(Manager):
     """Handles the CLI input and output"""
-
     def __init__(self):
-        pass
-
-
+        super().__init__()
 

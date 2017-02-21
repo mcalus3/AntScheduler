@@ -10,6 +10,7 @@ class Config:
 
     def __init__(self, _config_name):
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', _config_name)
+        algorithm_list = ["MaxMin", "AntSystem"]
         parser = ConfigParser()
         parser.read(config_path)
 
@@ -25,7 +26,7 @@ class Config:
             self.pheromone_potency = parser.getfloat("floats", "pheromone_potency")
             self.pheromone_distribution = parser.getfloat("floats", "pheromone_distribution")
             self.init_pheromone_value = parser.getfloat("floats", "init_pheromone_value")
-
-            self.render_images = parser.getboolean("booleans", "render_images")
         except configparser.NoOptionError or configparser.NoSectionError:
             raise IOError(".ini config file corrupted!")
+        if self.algorithm_type not in algorithm_list:
+            raise IOError("wrong algorithm name!")

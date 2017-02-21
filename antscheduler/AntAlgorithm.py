@@ -29,7 +29,8 @@ class AntAlgorithm:
 
     def graph_pheromone_clear(self):
         for node in self.nodes_list:
-            node.pheromone_list = []
+            for edge in node.pheromone_dict:
+                node.pheromone_dict[edge] = self.config.init_pheromone_value
 
     def run(self):
         pass
@@ -55,6 +56,7 @@ class MaxMin(AntAlgorithm):
             self.pheromone_trail_modify(self.ant_population[i].visited_list, value, MULTIPLY)
 
     def run(self):
+        self.graph_pheromone_clear()
         for iteration in range(self.config.iterations):
             self.ant_population = [Ant(self.nodes_list[0]) for _ in range(self.config.ant_population)]
             for ant in self.ant_population:
@@ -84,6 +86,7 @@ class AntSystem(AntAlgorithm):
             self.pheromone_trail_modify(self.ant.visited_list, value, ADD)
 
     def run(self):
+        self.graph_pheromone_clear()
         for iteration in range(self.config.iterations):
             self.ant_population = [Ant(self.nodes_list[0]) for _ in range(self.config.ant_population)]
             for ant in self.ant_population:
