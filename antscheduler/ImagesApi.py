@@ -13,7 +13,7 @@ render_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'dat
 def draw_graph(nodes_list):
     """Draws the graph image using Graphviz library"""
 
-    graph = graphviz.Digraph(name='ProcessGraph', format='png')
+    graph = graphviz.Digraph(name='ProcessGraph', format='svg')
     graph.body.extend(['rankdir=LR'])
     graph.attr('node', style='bold')
     for node in nodes_list:

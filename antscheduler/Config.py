@@ -11,21 +11,21 @@ class Config:
     def __init__(self, _config_name):
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', _config_name)
         algorithm_list = ["MaxMin", "AntSystem"]
+        str_config_list = ["graph_file", "algorithm_type"]
+        int_config_list = ["iterations", "ant_population", "max_min_ants_promoted"]
+        float_config_list = ["evaporation_rate", "pheromone_potency", "pheromone_distribution", "init_pheromone_value"]
         parser = ConfigParser()
         parser.read(config_path)
 
         try:
-            self.graph_file = parser.get("strings", "graph_file")
-            self.algorithm_type = parser.get("strings", "algorithm_type")
+            for str in str_config_list:
+                setattr(self, str, parser.get("strings", str))
 
-            self.iterations = parser.getint("ints", "iterations")
-            self.ant_population = parser.getint("ints", "ant_population")
-            self.max_min_ants_promoted = parser.getint("ints", "max_min_ants_promoted")
+            for int in int_config_list:
+                setattr(self, int, parser.getint("ints", int))
 
-            self.evaporation_rate = parser.getfloat("floats", "evaporation_rate")
-            self.pheromone_potency = parser.getfloat("floats", "pheromone_potency")
-            self.pheromone_distribution = parser.getfloat("floats", "pheromone_distribution")
-            self.init_pheromone_value = parser.getfloat("floats", "init_pheromone_value")
+            for float in float_config_list:
+                setattr(self, float, parser.getfloat("floats", float))
         except configparser.NoOptionError or configparser.NoSectionError:
             raise IOError(".ini config file corrupted!")
         if self.algorithm_type not in algorithm_list:
