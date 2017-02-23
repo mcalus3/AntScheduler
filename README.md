@@ -33,4 +33,5 @@ end,0,0,a2 b2 c2 d2 e2 f2
 Will represent following graph (where colors are machine types):
 ![example_graph](https://github.com/mcalus3/AntScheduler/blob/master/graphics/example_graph.png)
 
-Application creates best schedule found by the algorithm and saves it in file output_schedule.txt. It also prints history of found results in console (to visualize the algorithm convergence).
+Application creates best schedule found by the algorithm and saves it in file output_schedule.txt. It also prints history of found results in console (to visualize the algorithm convergence). The scheule display is not yet implemented, first prototype looks like this:
+![example_schedule](https://github.com/mcalus3/AntScheduler/blob/master/graphics/example_schedule.png)
