@@ -47,13 +47,13 @@ class Manager:
 
         if self.__class__ == UIManager:
             csv_reader = self.OperationList.toPlainText()
-            csv_reader = csv_reader.splitlines()
-            csv_reader = [row.split(",") for row in csv_reader]
 
         else:
             with open(graph_path, "r") as file_csv:
                 csv_reader = file_csv.read()
-                csv_reader = [row.split(",") for row in csv_reader]
+
+        csv_reader = csv_reader.splitlines()
+        csv_reader = [row.split(",") for row in csv_reader]
 
         nodes_list = []
         for row in csv_reader:
@@ -154,3 +154,4 @@ class CLIManager(Manager):
 
     def __init__(self):
         super().__init__()
+        self.graph_create()
