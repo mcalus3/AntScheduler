@@ -3,6 +3,7 @@
 from setuptools import setup
 import codecs
 import os
+import antscheduler
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,7 +13,7 @@ with codecs.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='AntScheduler',
-    version='0.1.1',
+    version=antscheduler.__version__,
     description='Application for solving scheduling problems',
     long_description=long_description,
     url='https://github.com/pypa/sampleproject',
