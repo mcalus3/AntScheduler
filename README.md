@@ -1,4 +1,4 @@
-![AntScheduler Logo](https://github.com/mcalus3/AntScheduler/blob/master/graphics/AntScheduler_logo.png)
+![AntScheduler Logo](https://github.com/mcalus3/AntScheduler/blob/master/docs/AntScheduler_logo.png)
 
 Ant-powered scheduling app by mcalus3.
 
@@ -31,7 +31,7 @@ d2,3,2,d1 e1
 end,0,0,a2 b2 c2 d2 e2 f2
 ```
 Will represent following graph (where colors are machine types):
-![example_graph](https://github.com/mcalus3/AntScheduler/blob/master/graphics/example_graph.png)
+![example_graph](https://github.com/mcalus3/AntScheduler/blob/master/docs/example_graph.png)
 
 Application creates best schedule found by the algorithm and saves it in file output_schedule.txt. It also prints history of found results in console (to visualize the algorithm convergence). The scheule display is not yet implemented, first prototype looks like this:
-![example_schedule](https://github.com/mcalus3/AntScheduler/blob/master/graphics/example_schedule.png)
+![example_schedule](https://github.com/mcalus3/AntScheduler/blob/master/docs/example_schedule.png)
