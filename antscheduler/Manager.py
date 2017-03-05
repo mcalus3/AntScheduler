@@ -83,7 +83,7 @@ class Manager:
         # draw a graph image
         ImagesApi.draw_graph(nodes_list)
         if self.__class__ == UIManager:
-            svg_item = QtSvg.QGraphicsSvgItem("..\\data\\ProcessGraph.gv.svg")
+            svg_item = QtSvg.QGraphicsSvgItem(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data',"ProcessGraph.gv.svg"))
             scene = QtWidgets.QGraphicsScene()
             scene.addItem(svg_item)
             self.processView.setScene(scene)
@@ -111,7 +111,7 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
         self.setupUi(self)
         self.StartButton.clicked.connect(self.algorithm_run)
         self.CreateButton.clicked.connect(self.graph_create)
-        with open("..\\data\\ExampleInput.csv") as input:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'ExampleInput.csv')) as input:
             self.OperationList.setPlainText(input.read())
         self.graph_create()
         #self.algorithmComboBox.setCurrentIndex()
