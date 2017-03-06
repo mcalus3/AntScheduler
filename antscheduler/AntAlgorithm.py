@@ -43,12 +43,14 @@ class MaxMin(AntAlgorithm):
     def __init__(self, _config, _nodes_list):
         AntAlgorithm.__init__(self, _config, _nodes_list)
         self.history_best = Ant(self.nodes_list[0])
+        # TODO how to make arbitrary big max value?
         self.history_best.result_value = 100000
 
     def graph_update(self):
         self.ant_population.sort(key=lambda x: x.result_value)
         self.result_history.append(self.ant_population[0])
         self.history_best = min(self.history_best, self.ant_population[0], key=lambda x: x.result_value)
+
         # Modify trail - once for history best result and once for couple of local best results
         self.pheromone_trail_modify(self.history_best.visited_list, 1 + self.config.pheromone_potency, MULTIPLY)
         for i in range(self.config.max_min_ants_promoted):
@@ -61,9 +63,11 @@ class MaxMin(AntAlgorithm):
             self.ant_population = [Ant(self.nodes_list[0]) for _ in range(self.config.ant_population)]
             for ant in self.ant_population:
                 ant.result_generate()
+
                 # evaporate the pheromone, minimal value is 1
                 self.pheromone_trail_modify(ant.visited_list, self.config.evaporation_rate, MULTIPLY)
                 self.pheromone_trail_modify(ant.visited_list, 1 - self.config.evaporation_rate, ADD)
+
             self.graph_update()
             logger.info(
                 "running iteration: {0}, best result_permutation is: {1}".format(iteration,
@@ -80,6 +84,7 @@ class AntSystem(AntAlgorithm):
     def graph_update(self):
         self.ant_population.sort(key=lambda x: x.result_value)
         self.result_history.append(self.ant_population[0])
+
         # Modify trail - once for history best result and once for couple of local best results
         for ant in self.ant_population:
             value = (1 / ant.result_value * ant_population[0].result_value * self.config.pheromone_potency)
@@ -91,6 +96,7 @@ class AntSystem(AntAlgorithm):
             self.ant_population = [Ant(self.nodes_list[0]) for _ in range(self.config.ant_population)]
             for ant in self.ant_population:
                 ant.result_generate()
+
             self.graph_update()
             logger.info(
                 "running iteration: {0}, best result_permutation is: {1}".format(iteration,

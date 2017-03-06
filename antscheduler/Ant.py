@@ -11,7 +11,6 @@ class Ant:
         self.visited_list = [_start_node]
         self.visibility_list = []
         self.result_value = None
-        # TODO: unclear, refactor for algorithm consistency
         self.visibility_list_update()
 
     def visibility_list_update(self):

@@ -79,6 +79,7 @@ class Manager:
                 for successor in nodes_list:
                     if successor not in nested_predecessors:
                         node.pheromone_dict[successor] = self.config.init_pheromone_value
+
         # draw a graph image
         ImagesApi.draw_graph(nodes_list)
         if self.__class__ == UIManager:
@@ -113,6 +114,7 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'ExampleInput.csv')) as input:
             self.OperationList.setPlainText(input.read())
         self.graph_create()
+
         #self.algorithmComboBox.setCurrentIndex()
         configs = [(self.iterationsLineEdit, "iterations"),
                    (self.antPopulationLineEdit, "ant_population"),
