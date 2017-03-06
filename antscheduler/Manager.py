@@ -7,7 +7,6 @@ Copyright (C) 2016 Marek Calus. All Rights Reserved.
 """
 
 import os
-import csv
 import sys
 import logging
 import UiForm

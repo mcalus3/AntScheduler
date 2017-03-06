@@ -1,5 +1,4 @@
 import configparser
-from configparser import ConfigParser
 import logging
 import os
 
@@ -14,7 +13,7 @@ class Config:
         str_config_list = ["graph_file", "algorithm_type"]
         int_config_list = ["iterations", "ant_population", "max_min_ants_promoted"]
         float_config_list = ["evaporation_rate", "pheromone_potency", "pheromone_distribution", "init_pheromone_value"]
-        parser = ConfigParser()
+        parser = configparser.ConfigParser()
         parser.read(config_path)
 
         try:
