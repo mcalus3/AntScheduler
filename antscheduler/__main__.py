@@ -4,8 +4,9 @@ from PyQt5 import QtWidgets
 
 config_file = "config.ini"
 
-def main():
-    if len(sys.argv) > 1 and sys.argv[1] == 'cli':
+
+def main(mode="gui"):
+    if mode == 'cli':
         # CLI initialization
         manager = CLIManager()
         manager.algorithm_run()
@@ -17,4 +18,7 @@ def main():
         app.exec_()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == 'cli':
+        main('cli')
+    else:
+        main('gui')

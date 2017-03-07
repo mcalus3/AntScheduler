@@ -13,7 +13,7 @@ import UiForm
 import ImagesApi
 import AntAlgorithm
 from Config import Config
-from GraphNode import GraphNode
+import Graph
 from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg
 
 logger = logging.getLogger("AntScheduler")
@@ -39,56 +39,8 @@ class Manager:
 
     def __init__(self):
         self.config = Config(config_file)
+        self.graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.config.graph_file)
         self.nodes_list = None
-
-    def graph_create(self):
-        graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.config.graph_file)
-
-        if self.__class__ == UIManager:
-            csv_reader = self.OperationList.toPlainText()
-
-        else:
-            with open(graph_path, "r") as file_csv:
-                csv_reader = file_csv.read()
-
-        csv_reader = csv_reader.splitlines()
-        csv_reader = [row.split(",") for row in csv_reader]
-
-        nodes_list = []
-        for row in csv_reader:
-            # check if the data aren't missing
-            if len(row) < 3:
-                logger.warning("Incorrect input, blank line in input file")
-                continue
-            # read the static info about each node
-            nodes_list.append(GraphNode(row[0], int(row[1]), int(row[2])))
-
-            # read the dynamic info about each node (successors lists)
-        for i, row in enumerate(csv_reader):
-            try:
-                pre_list = row[3].split()
-                for predecessor in [node for node in nodes_list if node.name in pre_list]:
-                    nodes_list[i].predecessor_list.append(predecessor)
-                    predecessor.successor_list.append(nodes_list[i])
-            except IndexError:
-                continue  # node has no successors
-
-            # initialise pheromone edges
-            for node in nodes_list:
-                nested_predecessors = [node] + node.nested_predecessors()
-                for successor in nodes_list:
-                    if successor not in nested_predecessors:
-                        node.pheromone_dict[successor] = self.config.init_pheromone_value
-
-        # draw a graph image
-        ImagesApi.draw_graph(nodes_list)
-        if self.__class__ == UIManager:
-            svg_item = QtSvg.QGraphicsSvgItem(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data',"ProcessGraph.gv.svg"))
-            scene = QtWidgets.QGraphicsScene()
-            scene.addItem(svg_item)
-            self.processView.setScene(scene)
-
-        self.nodes_list = nodes_list
 
     def algorithm_run(self):
         # run function specified in self.config.algorithm_type with arguments self.config and self.nodes_list
@@ -111,11 +63,12 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
         self.setupUi(self)
         self.StartButton.clicked.connect(self.algorithm_run)
         self.CreateButton.clicked.connect(self.graph_create)
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'ExampleInput.csv')) as input:
-            self.OperationList.setPlainText(input.read())
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data',
+                               'ExampleInput.csv')) as input_text:
+            self.OperationList.setPlainText(input_text.read())
         self.graph_create()
 
-        #self.algorithmComboBox.setCurrentIndex()
+        # self.algorithmComboBox.setCurrentIndex()
         configs = [(self.iterationsLineEdit, "iterations"),
                    (self.antPopulationLineEdit, "ant_population"),
                    (self.evaporationRateLineEdit, "evaporation_rate"),
@@ -124,16 +77,28 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
                    (self.antsPromotedLineEdit, "max_min_ants_promoted"),
                    (self.pheromoneDistributionLineEdit, "pheromone_distribution")]
 
-        #self.iterationsLineEdit.textChanged.connect(self.iterations_slot)
+        # self.iterationsLineEdit.textChanged.connect(self.iterations_slot)
         for pair in configs:
             pair[0].setText(str(getattr(self.config, pair[1])))
             pair[0].textChanged.connect(generate_setter(pair, self.config))
+
+    def graph_create(self):
+        graph_text = self.OperationList.toPlainText()
+        self.nodes_list = Graph.graph_create(graph_text)
+
+        # draw a graph image
+        ImagesApi.draw_graph(self.nodes_list)
+        svg_item = QtSvg.QGraphicsSvgItem(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', "ProcessGraph.gv.svg"))
+        scene = QtWidgets.QGraphicsScene()
+        scene.addItem(svg_item)
+        self.processView.setScene(scene)
 
     def iterations_slot(self):
         self.config.iterations = int(str(self.iterationsLineEdit.text()))
 
     def closeEvent(self, event):
-        reply = QtWidgets.QMessageBox.question(self, 'Message',
+        reply = QtWidgets.QMessageBox.question(self, "Message",
                                                "Are you sure you want to quit?", QtWidgets.QMessageBox.Yes |
                                                QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
         if reply == QtWidgets.QMessageBox.Yes:
@@ -148,11 +113,16 @@ def generate_setter(pair, config_obj):
             setattr(config_obj, pair[1], int(str(pair[0].text())))
         except ValueError:
             setattr(config_obj, pair[1], float(str(pair[0].text())))
+
     return func
+
 
 class CLIManager(Manager):
     """Handles the CLI input and output"""
 
     def __init__(self):
         super().__init__()
-        self.graph_create()
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', self.config.graph_file),
+                  "r") as file_csv:
+            csv_text = file_csv.read()
+            self.nodes_list = Graph.graph_create(csv_text)
