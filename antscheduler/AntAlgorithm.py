@@ -16,6 +16,16 @@ class AntAlgorithm:
         self.ant_population = []
         self.result_history = []
 
+    def run(self):
+        pass
+
+    def pheromone_init(self):
+        for node in self.nodes_list:
+            nested_predecessors = [node] + node.nested_predecessors()
+            for successor in self.nodes_list:
+                if successor not in nested_predecessors:
+                    node.pheromone_dict[successor] = self.config.init_pheromone_value
+
     @staticmethod
     def pheromone_trail_modify(_trail, _value, _operation):
         iterator = iter(_trail)
@@ -26,16 +36,6 @@ class AntAlgorithm:
             elif _operation == ADD:
                 node.pheromone_dict[next_node] += _value
             node = next_node
-
-    def pheromone_init(self):
-        for node in self.nodes_list:
-            nested_predecessors = [node] + node.nested_predecessors()
-            for successor in self.nodes_list:
-                if successor not in nested_predecessors:
-                    node.pheromone_dict[successor] = self.config.init_pheromone_value
-
-    def run(self):
-        pass
 
 
 class MaxMin(AntAlgorithm):

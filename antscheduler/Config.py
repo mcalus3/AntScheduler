@@ -4,6 +4,7 @@ import os
 
 logger = logging.getLogger("AntScheduler.MaxMin")
 
+
 class Config:
     """ Class containing all configuration infos as fields"""
 
@@ -17,14 +18,14 @@ class Config:
         parser.read(config_path)
 
         try:
-            for str in str_config_list:
-                setattr(self, str, parser.get("strings", str))
+            for str_config in str_config_list:
+                setattr(self, str_config, parser.get("strings", str_config))
 
-            for int in int_config_list:
-                setattr(self, int, parser.getint("ints", int))
+            for int_config in int_config_list:
+                setattr(self, int_config, parser.getint("ints", int_config))
 
-            for float in float_config_list:
-                setattr(self, float, parser.getfloat("floats", float))
+            for _config in float_config_list:
+                setattr(self, _config, parser.getfloat("floats", _config))
         except configparser.NoOptionError or configparser.NoSectionError:
             raise IOError(".ini config file corrupted!")
         if self.algorithm_type not in algorithm_list:

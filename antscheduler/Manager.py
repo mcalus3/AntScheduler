@@ -52,7 +52,6 @@ class Manager:
         best_result = algorithm.history_best
         logger.info("best path: {0}".format(best_result.result_value))
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
-        ImagesApi.schedule_image_create(best_result)
 
 
 class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
