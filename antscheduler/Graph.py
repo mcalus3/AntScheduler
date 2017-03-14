@@ -40,6 +40,15 @@ def graph_create(graph_text):
                 predecessor.successor_list.append(nodes_list[i])
         except IndexError:
             continue  # node has no successors
+
+    start_nodes = [node for node in nodes_list if node.predecessor_list == []]
+    if len(start_nodes) > 1:
+        new_start_node = Node("automatic_start", 0, 0)
+        new_start_node.successor_list = start_nodes
+        nodes_list.insert(0, new_start_node)
+        for node in start_nodes:
+            node.predecessor_list.append(new_start_node)
+
     return nodes_list
 
 
