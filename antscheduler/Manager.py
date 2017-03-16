@@ -14,7 +14,7 @@ import ImagesApi
 import AntAlgorithm
 from Config import Config
 import Graph
-from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg
+from PyQt5 import QtWidgets, QtSvg
 
 logger = logging.getLogger("AntScheduler")
 config_file = "config.ini"

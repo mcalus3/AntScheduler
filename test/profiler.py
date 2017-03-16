@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, 'C:\\repos\\AntScheduler\\antscheduler')
-
 import pycallgraph
 import antscheduler.__main__
 
