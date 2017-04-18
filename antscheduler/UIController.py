@@ -17,33 +17,26 @@ import Graph
 from PyQt5 import QtWidgets, QtSvg
 
 logger = logging.getLogger("AntScheduler")
-config_file = "config.ini"
+config_file_name = "config.ini"
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def initialize_logger():
-    logger.setLevel(logging.DEBUG)
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(
-        logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
-    logger.addHandler(console_handler)
-    logger.debug("Logger initialized")
-    return logger
-
-
-class Manager:
+class UIController:
     """stores algorithm configuration data, does graph creation from data file and runs the algorithm"""
 
     global logger
-    initialize_logger()
+
+    def initialize_logger(self):
+        pass
 
     def __init__(self):
-        self.config = Config(config_file)
-        self.graph_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.config.graph_file)
+        self.config = Config(config_file_name)
+        self.graph_path = os.path.join(current_dir, self.config.graph_file)
         self.nodes_list = None
+        self.initialize_logger()
 
     def algorithm_run(self):
-        # run function specified in self.config.algorithm_type with arguments self.config and self.nodes_list
+        """runs function specified in self.config.algorithm_type with arguments self.config and self.nodes_list"""
         algorithm = getattr(AntAlgorithm, self.config.algorithm_type)(self.config, self.nodes_list)
         algorithm.run()
 
@@ -54,7 +47,7 @@ class Manager:
         logger.info(" -> ".join([operation.name for operation in best_result.visited_list]))
 
 
-class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
+class GUIController(QtWidgets.QMainWindow, UIController, UiForm.Ui_MainWindow):
     """Handles the UI form input and output"""
 
     def __init__(self, parent=None):
@@ -66,6 +59,7 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
                                'ExampleInput.csv')) as input_text:
             self.OperationList.setPlainText(input_text.read())
         self.graph_create()
+        self.statusBar.showMessage("System Status | Normal")
 
         # self.algorithmComboBox.setCurrentIndex()
         configs = [(self.iterationsLineEdit, "iterations"),
@@ -105,6 +99,17 @@ class UIManager(QtWidgets.QMainWindow, Manager, UiForm.Ui_MainWindow):
         else:
             event.ignore()
 
+    def initialize_logger(self):
+        logger.setLevel(logging.DEBUG)
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(
+        logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
+        logger.addHandler(console_handler)
+        logger.debug("Logger initialized")
+        return logger
+
+
 
 def generate_setter(pair, config_obj):
     def func():
@@ -116,7 +121,7 @@ def generate_setter(pair, config_obj):
     return func
 
 
-class CLIManager(Manager):
+class CLIController(UIController):
     """Handles the CLI input and output"""
 
     def __init__(self):
@@ -125,3 +130,14 @@ class CLIManager(Manager):
                   "r") as file_csv:
             csv_text = file_csv.read()
             self.nodes_list = Graph.graph_create(csv_text)
+
+    def initialize_logger(self):
+            logger.setLevel(logging.DEBUG)
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setLevel(logging.INFO)
+            console_handler.setFormatter(
+                logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
+            logger.addHandler(console_handler)
+            logger.debug("Logger initialized")
+            return logger
+
