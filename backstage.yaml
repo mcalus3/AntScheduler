@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: AntScheduler
+  description: ""
+  annotations:
+    github.com/project-slug: mcalus3/AntScheduler
+spec:
+  type: service
+  owner: mcalus3
+  lifecycle: experimental
